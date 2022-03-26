@@ -52,7 +52,7 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
         fake_image, mean, log_var = model(image)
 
         rec_loss = nn.MSELoss(reduction='mean')(real_image, fake_image)
-        KL = -0.5 * torch.sum(1 + log_var - (mean ** 2) - torch.exp(log_var))
+        KL = -0.5 * torch.mean(1 + log_var - (mean ** 2) - torch.exp(log_var))
         loss = rec_loss + KL
 
         loss.backward()
