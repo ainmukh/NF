@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from utils import gaussian_log_p, gaussian_sample
-from blocks import ZeroConv2d
+from .utils import gaussian_log_p, gaussian_sample
+from .blocks import ZeroConv2d
 from flow import Flow
 
 

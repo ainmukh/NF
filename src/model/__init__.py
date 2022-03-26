@@ -1,3 +1,3 @@
-from glow import Glow
+from .glow import Glow
 
 __all__ = ['Glow']
