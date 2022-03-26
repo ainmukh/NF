@@ -45,7 +45,7 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
 
     step = 0
     for image in tqdm(dataloader, total=len(dataloader)):
-        real_image = image
+        real_image = image.to(device)
         image = image.to(device)
 
         optimizer.zero_grad()
