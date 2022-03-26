@@ -23,6 +23,7 @@ class Block(nn.Module):
             self.prior = ZeroConv2d(in_channels * 4, in_channels * 8)
 
     def forward(self, x):
+        # print('BLOCK INPUT SIZE =', x.size())
         bs, channels, height, width = x.size()
 
         squeezed = x.view(bs, channels, height // 2, 2, width // 2, 2)
@@ -46,6 +47,11 @@ class Block(nn.Module):
             log_p = gaussian_log_p(x, mean, log_sd)
             log_p = log_p.view(bs, -1).sum(1)
             z_new = x
+
+        # unsqueezed = x.view(bs, channels, 2, 2, height // 2, width // 2)
+        # unsqueezed = unsqueezed.permute(0, 1, 4, 2, 5, 3)
+        # out = unsqueezed.contiguous().view(bs, channels, height, width)
+        # print('VAPNEV BLOCK OUTPUT SIZE =', out.size())
 
         return x, log_det, log_p, z_new
 
