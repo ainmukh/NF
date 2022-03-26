@@ -15,3 +15,4 @@ class ZeroConv2d(nn.Module):
         x = F.pad(x, [1, 1, 1, 1], value=1)
         x = self.conv(x)
         x = x * torch.exp(self.scale * 3)
+        return x
