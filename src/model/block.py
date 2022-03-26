@@ -26,7 +26,7 @@ class Block(nn.Module):
         bs, channels, height, width = x.size()
 
         squeezed = x.view(bs, channels, height // 2, 2, width // 2, 2)
-        squeezed = squeezed.permute(0, 1, 2, 5, 2, 4)
+        squeezed = squeezed.permute(0, 1, 3, 5, 2, 4)
         x = squeezed.contiguous().view(bs, channels * 4, height // 2, width // 2)
 
         log_det = 0
