@@ -86,5 +86,6 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
 
 
 for i in range(10):
+    wandb.init(project='GAN_HW3_VAE')
     path = ''
     train_epoch(dataloader, config, model, optimizer, i, path)
