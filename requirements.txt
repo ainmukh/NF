@@ -1,0 +1,6 @@
+torch
+wandb
+tqdm
+torchmetrics
+requests
+torchvision
