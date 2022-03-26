@@ -52,6 +52,8 @@ class VAE(nn.Module):
         )
         self.decoder = nn.Sequential(*self.decoder)
 
+        self.device = config.device
+
     def encode(self, x):
         latent = self.encoder(x)
         mean, log_var = self.mean(latent), self.log_var(latent)
@@ -75,6 +77,7 @@ class VAE(nn.Module):
 
         return x, mean, log_var
 
+    @torch.no_grad()
     def sample(self, n_samples):
         samples = torch.randn(n_samples, 256).to(self.device)
         sample_res = self.decode(samples)
