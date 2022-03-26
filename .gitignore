@@ -6,3 +6,4 @@ ENV/
 .ipynb_checkpoints
 *.ipynb
 .idea/
+.DS_Store
