@@ -26,7 +26,7 @@ class Glow(nn.Module):
     def init_with_data(self, batch):
         bs, channels, input_size, _ = batch.size()
         self.z_shapes = self.calc_z_shapes(
-            channels, input_size, self.n_flow, self.n_block
+            channels, input_size, self.n_block
         )
 
     def calc_z_shapes(self, n_channels, input_size, n_blocks):
