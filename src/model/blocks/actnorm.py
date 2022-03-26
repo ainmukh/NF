@@ -27,7 +27,7 @@ class ActNorm(nn.Module):
             self.initialize(x)
             self.initialized = True
 
-        log_abs = torch.log(torch.abs(x))
+        log_abs = torch.log(torch.abs(self.scale))
         log_det = height * width * log_abs.sum()
 
         return self.scale * (x + self.loc), log_det
