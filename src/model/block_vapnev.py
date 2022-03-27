@@ -35,9 +35,12 @@ class Block(nn.Module):
             x, curr_log_det = flow(x)
             log_det += curr_log_det
 
-        unsqueezed = x.view(bs, channels, 2, 2, height // 2, width // 2)
-        unsqueezed = unsqueezed.permute(0, 1, 4, 2, 5, 3)
-        x = unsqueezed.contiguous().view(bs, channels, height, width)
+        if self.split:
+            x, z_new = x.chunk(2, 1)
+
+        # unsqueezed = x.view(bs, channels, 2, 2, height // 2, width // 2)
+        # unsqueezed = unsqueezed.permute(0, 1, 4, 2, 5, 3)
+        # x = unsqueezed.contiguous().view(bs, channels, height, width)
 
         return x, log_det
 
