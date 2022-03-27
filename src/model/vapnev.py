@@ -60,8 +60,13 @@ class VAPNEV(nn.Module):
         self.device = config.device
 
     def forward(self, x):
+        bs, channels, h, w = x.size()
         z = self.encoder(x).reshape(-1, 512, 4, 4)
-        mean, log_sd = self.decoder(z)
+
+        x_ = self.decoder(z)
+        x_ = self.decode(x_).view(bs, -1)
+        mean = self.mean(x_).view(bs, channels, h, w)
+        log_sd = self.log_sd(x_).view(bs, channels, h, w)
         y, log_det = self.glow(x)
         log_p = gaussian_log_p(y, mean, log_sd)
         return y, log_p, log_det
