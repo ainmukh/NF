@@ -18,7 +18,7 @@ class Glow(nn.Module):
             self.blocks.append(
                 Block(n_channel, config.n_flow, affine=config.affine)
             )
-            n_channel *= 2
+            # n_channel *= 2
         self.blocks.append(
             Block(n_channel, config.n_flow, split=False, affine=config.affine)
         )
