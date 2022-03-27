@@ -75,8 +75,8 @@ class Decoder(nn.Module):
         bs = z.size(0)
         latent = self.decoder_map(z).reshape(-1, 512, 4, 4)
         x = self.decoder(latent).view(bs, -1)
-        mean = self.mean(x).view(bs, self.in_channels, self.in_side, self.in_side)
-        log_sd = self.log_sd(x).view(bs, self.in_channels, self.in_side, self.in_side)
+        mean = self.mean(x).view(bs, 3, 64, 64)
+        log_sd = self.log_sd(x).view(bs, 3, 64, 64)
         return mean, log_sd
 
 
