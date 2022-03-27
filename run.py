@@ -28,7 +28,7 @@ dataset = CelebaCustomDataset(
     attr_file_path='list_attr_celeba.txt',
     crop=False
 )
-dataloader = torch.utils.data.DataLoader(dataset, batch_size=64, drop_last=True)
+dataloader = torch.utils.data.DataLoader(dataset, batch_size=16, drop_last=True)
 
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'

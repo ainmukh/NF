@@ -10,7 +10,7 @@ class Config:
     lu: bool = True
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     lr: float = 2e-4
-    batch: int = 64
+    batch: int = 16
     n_flow: int = 16
     n_block: int = 3
     conv_lu: bool = True

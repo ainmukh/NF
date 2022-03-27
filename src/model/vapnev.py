@@ -101,11 +101,7 @@ class VAPNEV(nn.Module):
     def reverse(self, x, t=0.5):
         bs, channels, h, w = x.size()
         z, _, _ = self.encoder(x)
-
-        x = self.decoder_map(z)
-        x = self.decoder(x)
-        mean = self.mean(x).view(bs, channels, h, w)
-        log_sd = self.log_sd(x).view(bs, channels, h, w)
+        mean, log_sd = self.decoder(z)
         y = gaussian_sample(torch.randn_like(mean), mean, log_sd)
         result = self.cond_glow.reverse(y)
         return result
