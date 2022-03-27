@@ -6,7 +6,7 @@ from .flow import Flow
 
 
 class Block(nn.Module):
-    def __init__(self, in_channels: int, n_flow: int, split: bool = False, affine: bool = True):
+    def __init__(self, in_channels: int, n_flow: int, split: bool = True, affine: bool = True):
         super(Block, self).__init__()
 
         squeeze_dim = in_channels * 4

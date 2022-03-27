@@ -16,7 +16,7 @@ class Glow(nn.Module):
         self.blocks = nn.ModuleList()
         for i in range(self.n_block - 1):
             self.blocks.append(
-                Block(n_channel, config.n_flow, affine=config.affine)
+                Block(n_channel, config.n_flow, split=False, affine=config.affine)
             )
             n_channel *= 2
         self.blocks.append(
