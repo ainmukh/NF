@@ -19,3 +19,4 @@ class Config:
     img_size: int = 64
     temp: float = 0.7
     n_sample: int = 64
+    z_dim: int = 128

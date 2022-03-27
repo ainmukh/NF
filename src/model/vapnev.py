@@ -61,6 +61,7 @@ class VAPNEV(nn.Module):
 
     def forward(self, x):
         z, _, _ = self.encoder(x)
+        print('Z SIZE =', z.size())
         mean, log_sd = self.decoder(z)
         y, log_det = self.glow(x)
         log_p = gaussian_log_p(y, mean, log_sd)
