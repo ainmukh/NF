@@ -6,7 +6,7 @@ from dataclasses import dataclass
 class Config:
     in_channels: int = 3
     n_flows: int = 8
-    n_blocks: int = 1
+    n_blocks: int = 3
     lu: bool = True
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     lr: float = 2e-4

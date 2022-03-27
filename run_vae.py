@@ -37,7 +37,10 @@ device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 model = VAE(config)
 model.to(device)
 
-optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
+ckpt = torch.load('vae8.pth', map_location=device)
+model.load_state_dict(ckpt)
+
+optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
 
 
 def train_epoch(dataloader, config, model, optimizer, epoch, path):
@@ -81,7 +84,7 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
                                for i in range(config.n_sample)]})
 
         if step % (len(dataloader) // 2) == 0:
-            torch.save(model.state_dict(), path + f'vae{epoch}.pth')
+            torch.save(model.state_dict(), path + f'vae1.{epoch}.pth')
         step += 1
 
 
