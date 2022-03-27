@@ -37,7 +37,7 @@ class Block(nn.Module):
 
         unsqueezed = x.view(bs, channels, 2, 2, height // 2, width // 2)
         unsqueezed = unsqueezed.permute(0, 1, 4, 2, 5, 3)
-        out = unsqueezed.contiguous().view(bs, channels, height, width)
+        x = unsqueezed.contiguous().view(bs, channels, height, width)
 
         return x, log_det
 
