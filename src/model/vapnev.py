@@ -49,7 +49,7 @@ class VAPNEV(nn.Module):
         )
         self.decoder = nn.Sequential(*self.decoder)
         self.mean = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
-        self.log_var = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+        self.log_sd = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
         # DECODER
 
         # GLOW
