@@ -24,22 +24,6 @@ class Glow(nn.Module):
         )
         self.device = config.device
 
-    # def init_with_data(self, batch):
-    #     bs, channels, input_size, _ = batch.size()
-    #     self.z_shapes = self.calc_z_shapes(
-    #         channels, input_size, self.n_block
-    #     )
-    #
-    # def calc_z_shapes(self, n_channels, input_size, n_blocks):
-    #     z_shapes = []
-    #     for i in range(n_blocks - 1):
-    #         input_size //= 2
-    #         n_channels *= 2
-    #         z_shapes.append((n_channels, input_size, input_size))
-    #     input_size //= 2
-    #     z_shapes.append((n_channels * 4, input_size, input_size))
-    #     return z_shapes
-
     def forward(self, x):
         log_det = 0
 

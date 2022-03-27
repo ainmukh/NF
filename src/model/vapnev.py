@@ -68,15 +68,15 @@ class Decoder(nn.Module):
         )
         self.decoder = nn.Sequential(*self.decoder)
 
-        self.mean = nn.Linear(12288, 3072)
-        self.log_sd = nn.Linear(12288, 3072)
+        self.mean = nn.Linear(12288, 12288)
+        self.log_sd = nn.Linear(12288, 12288)
 
     def forward(self, z):
         bs = z.size(0)
         latent = self.decoder_map(z).reshape(-1, 512, 4, 4)
         x = self.decoder(latent).view(bs, -1)
-        mean = self.mean(x).view(bs, 48, 8, 8)
-        log_sd = self.log_sd(x).view(bs, 48, 8, 8)
+        mean = self.mean(x).view(bs, 12, 32, 32)
+        log_sd = self.log_sd(x).view(bs, 12, 32, 32)
         return mean, log_sd
 
 
@@ -109,7 +109,6 @@ class VAPNEV(nn.Module):
     @torch.no_grad()
     def sample(self, n, t=0.5):
         z = torch.randn(n, self.hidden).to(self.device) * t
-        z = z.reshape(-1, 512, 4, 4)
         mean, log_sd = self.decoder(z)
         y = gaussian_sample(torch.randn_like(mean), mean, log_sd)
         return self.glow.reverse(y)
