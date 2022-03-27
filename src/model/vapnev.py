@@ -63,7 +63,8 @@ class VAPNEV(nn.Module):
         bs, channels, h, w = x.size()
         z = self.encoder(x).reshape(-1, 512, 4, 4)
 
-        x_ = self.decoder(z)
+        x_ = self.decoder_map(z)
+        x_ = self.decoder(x_)
         x_ = x_.view(bs, -1)
         mean = self.mean(x_).view(bs, channels, h, w)
         log_sd = self.log_sd(x_).view(bs, channels, h, w)
@@ -73,8 +74,13 @@ class VAPNEV(nn.Module):
 
     @torch.no_grad()
     def reverse(self, x, t=0.5):
+        bs, channels, h, w = x.size()
         z, _, _ = self.encoder(x)
-        mean, log_sd = self.decoder(z)
+
+        x = self.decoder_map(z)
+        x = self.decoder(x)
+        mean = self.mean(x).view(bs, channels, h, w)
+        log_sd = self.log_sd(x).view(bs, channels, h, w)
         y = gaussian_sample(torch.randn_like(mean), mean, log_sd)
         result = self.cond_glow.reverse(y)
         return result
