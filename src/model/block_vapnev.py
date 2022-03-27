@@ -25,9 +25,9 @@ class Block(nn.Module):
     def forward(self, x):
         bs, channels, height, width = x.size()
 
-        squeezed = x.view(bs, channels, height // 2, 2, width // 2, 2)
-        squeezed = squeezed.permute(0, 1, 3, 5, 2, 4)
-        x = squeezed.contiguous().view(bs, channels * 4, height // 2, width // 2)
+        # squeezed = x.view(bs, channels, height // 2, 2, width // 2, 2)
+        # squeezed = squeezed.permute(0, 1, 3, 5, 2, 4)
+        # x = squeezed.contiguous().view(bs, channels * 4, height // 2, width // 2)
 
         log_det = 0
 
@@ -35,30 +35,19 @@ class Block(nn.Module):
             x, curr_log_det = flow(x)
             log_det += curr_log_det
 
-        # if self.split:
-        #     x, z_new = x.chunk(2, 1)
-
         return x, log_det
 
     def reverse(self, x, eps: float = None, reconstruct: bool = False):
-        # if self.split:
-        #     mean, log_sd = self.prior(x).chunk(2, 1)
-        #     z = gaussian_sample(eps, mean, log_sd)
-        #     x = torch.cat((x, z), 1)
-        # else:
-        #     zero = torch.zeros_like(x)
-        #     mean, log_sd = self.prior(zero).chunk(2, 1)
-        #     x = gaussian_sample(eps, mean, log_sd)
 
         for flow in self.flows[::-1]:
             x = flow.reverse(x)
 
         bs, channels, height, width = x.size()
 
-        unsqueezed = x.view(bs, channels, 2, 2, height // 2, width // 2)
-        unsqueezed = unsqueezed.permute(0, 1, 4, 2, 5, 3)
-        unsqueezed = unsqueezed.contiguous().view(
-            bs, channels, height, width
-        )
+        # unsqueezed = x.view(bs, channels, 2, 2, height // 2, width // 2)
+        # unsqueezed = unsqueezed.permute(0, 1, 4, 2, 5, 3)
+        # unsqueezed = unsqueezed.contiguous().view(
+        #     bs, channels, height, width
+        # )
 
         return unsqueezed

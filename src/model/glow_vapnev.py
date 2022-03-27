@@ -16,7 +16,7 @@ class Glow(nn.Module):
         self.blocks = nn.ModuleList()
         for i in range(self.n_block - 1):
             self.blocks.append(
-                Block(n_channel, config.n_flow, split=False, affine=config.affine)
+                Block(n_channel, config.n_flow, affine=config.affine)
             )
             n_channel *= 2
         self.blocks.append(
@@ -49,7 +49,7 @@ class Glow(nn.Module):
 
         return x, log_det
 
-    def reverse(self, x, reconstruct=False):
+    def reverse(self, x):
         for i, block in enumerate(self.blocks[::-1]):
             x = block.reverse(x)
         return x
