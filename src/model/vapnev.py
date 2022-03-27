@@ -68,9 +68,13 @@ class Decoder(nn.Module):
         )
         self.decoder = nn.Sequential(*self.decoder)
 
+        self.mean = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+        self.log_var = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+
     def forward(self, z):
+        bs = z.size(0)
         latent = self.decoder_map(z).reshape(-1, 512, 4, 4)
-        x = self.decoder(latent)
+        x = self.decoder(latent).view(bs, -1)
         print(x.size())
 
         return x
