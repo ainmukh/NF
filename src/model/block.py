@@ -48,11 +48,6 @@ class Block(nn.Module):
             log_p = log_p.view(bs, -1).sum(1)
             z_new = x
 
-        # unsqueezed = x.view(bs, channels, 2, 2, height // 2, width // 2)
-        # unsqueezed = unsqueezed.permute(0, 1, 4, 2, 5, 3)
-        # out = unsqueezed.contiguous().view(bs, channels, height, width)
-        # print('VAPNEV BLOCK OUTPUT SIZE =', out.size())
-
         return x, log_det, log_p, z_new
 
     def reverse(self, x, eps: float = None, reconstruct: bool = False):

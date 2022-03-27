@@ -103,7 +103,7 @@ class VAPNEV(nn.Module):
         z, _, _ = self.encoder(x)
         mean, log_sd = self.decoder(z)
         y = gaussian_sample(torch.randn_like(mean), mean, log_sd)
-        result = self.cond_glow.reverse(y)
+        result = self.glow.reverse(y)
         return result
 
     @torch.no_grad()
