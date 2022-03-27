@@ -68,16 +68,16 @@ class Decoder(nn.Module):
         )
         self.decoder = nn.Sequential(*self.decoder)
 
-        self.mean = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
-        self.log_var = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+        self.mean = nn.Linear(12288, 12288)
+        self.log_var = nn.Linear(12288, 12288)
 
     def forward(self, z):
         bs = z.size(0)
         latent = self.decoder_map(z).reshape(-1, 512, 4, 4)
         x = self.decoder(latent).view(bs, -1)
-        print(x.size())
-
-        return x
+        mean = self.mean(x).view(bs, self.in_channels, self.in_side, self.in_side)
+        log_sd = self.log_sd(x).view(bs, self.in_channels, self.in_side, self.in_side)
+        return mean, log_sd
 
 
 class VAPNEV(nn.Module):
