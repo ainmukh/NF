@@ -37,7 +37,7 @@ device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 model = VAE(config)
 model.to(device)
 
-ckpt = torch.load('vae8.pth', map_location=device)
+ckpt = torch.load('vae_ckpt.pth', map_location=device)
 model.load_state_dict(ckpt)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=3e-4)
@@ -54,8 +54,8 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
         optimizer.zero_grad()
         fake_image, mean, log_var = model(image)
 
-        rec_loss = nn.MSELoss(reduction='mean')(real_image, fake_image)
-        KL = -0.5 * torch.mean(1 + log_var - (mean ** 2) - torch.exp(log_var))
+        rec_loss = nn.MSELoss(reduction='sum')(real_image, fake_image)
+        KL = -0.5 * torch.sum(1 + log_var - (mean ** 2) - torch.exp(log_var))
         loss = rec_loss + KL
 
         loss.backward()
@@ -84,7 +84,7 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
                                for i in range(config.n_sample)]})
 
         if step % (len(dataloader) // 2) == 0:
-            torch.save(model.state_dict(), path + f'vae1.{epoch}.pth')
+            torch.save(model.state_dict(), path + f'vae{epoch}.pth')
         step += 1
 
 
