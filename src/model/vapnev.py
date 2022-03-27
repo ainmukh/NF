@@ -48,8 +48,8 @@ class VAPNEV(nn.Module):
             nn.Conv2d(in_channels=start_channels // (2 ** 4), out_channels=3, kernel_size=7, padding=3)
         )
         self.decoder = nn.Sequential(*self.decoder)
-        self.mean = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
-        self.log_sd = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+        self.mean = nn.Linear(start_channels * 4 * 4, 256)
+        self.log_sd = nn.Linear(start_channels * 4 * 4, 256)
         # DECODER
 
         # GLOW
