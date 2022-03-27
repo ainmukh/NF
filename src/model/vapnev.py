@@ -4,11 +4,11 @@ from .glow_vapnev import Glow
 from .utils import gaussian_log_p, gaussian_sample
 
 
-class VAPNEV(nn.Module):
-    def __init__(self, config):
-        super(VAPNEV, self).__init__()
-        # ENCODER
+class Encoder(nn.Module):
+    def __init__(self):
+        super(Encoder, self).__init__()
         self.encoder = []
+
         start_channels = 32
         self.encoder.append(
             nn.Conv2d(in_channels=3, out_channels=32, kernel_size=7, padding=3)
@@ -16,6 +16,7 @@ class VAPNEV(nn.Module):
         for i in range(4):
             in_channels = start_channels * (2 ** i)
             out_channels = in_channels * 2
+
             self.encoder.append(nn.Sequential(
                 nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1),
                 nn.BatchNorm2d(in_channels),
@@ -25,16 +26,34 @@ class VAPNEV(nn.Module):
                 nn.LeakyReLU(),
             ))
         self.encoder.append(nn.Flatten())
-        self.encoder = nn.Sequential(*self.encoder)
-        # ENCODER
 
-        # DECODER
+        self.encoder = nn.Sequential(*self.encoder)
+
+        self.mean = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+        self.log_var = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+
+    def forward(self, x):
+        latent = self.encoder(x)
+        mean, log_var = self.mean(latent), self.log_var(latent)
+
+        std = torch.exp(0.5 * log_var)
+        eps = torch.randn_like(std)
+
+        z = mean + std * eps
+
+        return z, mean, log_var
+
+
+class Decoder(nn.Module):
+    def __init__(self):
+        super(Decoder, self).__init__()
         self.decoder = []
         self.decoder_map = nn.Linear(256, 512 * 4 * 4)
         start_channels = 512
         for i in range(4):
             in_channels = start_channels // (2 ** i)
             out_channels = in_channels // 2
+
             self.decoder.append(nn.Sequential(
                 nn.Conv2d(in_channels, in_channels, kernel_size=3, padding=1),
                 nn.BatchNorm2d(in_channels),
@@ -48,26 +67,28 @@ class VAPNEV(nn.Module):
             nn.Conv2d(in_channels=start_channels // (2 ** 4), out_channels=3, kernel_size=7, padding=3)
         )
         self.decoder = nn.Sequential(*self.decoder)
-        self.mean = nn.Linear(3 * 64 * 64, 3 * 64 * 64)
-        self.log_sd = nn.Linear(3 * 64 * 64, 3 * 64 * 64)
-        # DECODER
 
-        # GLOW
+    def forward(self, z):
+        latent = self.decoder_map(z).reshape(-1, 512, 4, 4)
+        x = self.decoder(latent)
+        print(x.size())
+
+        return x
+
+
+class VAPNEV(nn.Module):
+    def __init__(self, config):
+        super(VAPNEV, self).__init__()
+        self.encoder = Encoder()
+        self.decoder = Decoder()
         self.glow = Glow(config)
-        # GLOW
-
         self.hidden = config.z_dim
         self.device = config.device
 
     def forward(self, x):
         bs, channels, h, w = x.size()
-        z = self.encoder(x).reshape(-1, 512, 4, 4)
-
-        x_ = self.decoder_map(z)
-        x_ = self.decoder(x_)
-        x_ = x_.view(bs, -1)
-        mean = self.mean(x_).view(bs, channels, h, w)
-        log_sd = self.log_sd(x_).view(bs, channels, h, w)
+        z, _, _ = self.encoder(x)
+        mean, log_sd = self.decoder(z)
         y, log_det = self.glow(x)
         log_p = gaussian_log_p(y, mean, log_sd)
         return y, log_p, log_det
