@@ -26,8 +26,6 @@ class VAPNEV(nn.Module):
             ))
         self.encoder.append(nn.Flatten())
         self.encoder = nn.Sequential(*self.encoder)
-        self.mean = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
-        self.log_var = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
         # ENCODER
 
         # DECODER
@@ -50,6 +48,8 @@ class VAPNEV(nn.Module):
             nn.Conv2d(in_channels=start_channels // (2 ** 4), out_channels=3, kernel_size=7, padding=3)
         )
         self.decoder = nn.Sequential(*self.decoder)
+        self.mean = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
+        self.log_var = nn.Linear(start_channels * (2 ** 4) * 4 * 4, 256)
         # DECODER
 
         # GLOW
@@ -64,7 +64,7 @@ class VAPNEV(nn.Module):
         z = self.encoder(x).reshape(-1, 512, 4, 4)
 
         x_ = self.decoder(z)
-        x_ = self.decode(x_).view(bs, -1)
+        x_ = x_.view(bs, -1)
         mean = self.mean(x_).view(bs, channels, h, w)
         log_sd = self.log_sd(x_).view(bs, channels, h, w)
         y, log_det = self.glow(x)
