@@ -61,6 +61,7 @@ class VAPNEV(nn.Module):
 
     def forward(self, x):
         z = self.encoder(x)
+        print('Z SIZE =', z.size())
         mean, log_sd = self.decoder(z)
         y, log_det = self.glow(x)
         log_p = gaussian_log_p(y, mean, log_sd)
@@ -77,6 +78,7 @@ class VAPNEV(nn.Module):
     @torch.no_grad()
     def sample(self, n, t=0.5):
         z = torch.randn(n, self.hidden).to(self.device) * t
+        print('SAMPLE Z =', z.size())
         mean, log_sd = self.decoder(z)
         y = gaussian_sample(torch.randn_like(mean), mean, log_sd)
         return self.glow.reverse(y)
