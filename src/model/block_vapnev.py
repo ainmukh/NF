@@ -6,7 +6,7 @@ from .flow import Flow
 
 
 class Block(nn.Module):
-    def __init__(self, in_channels: int, n_flow: int, split: bool = True, affine: bool = True):
+    def __init__(self, in_channels: int, n_flow: int, split: bool = False, affine: bool = True):
         super(Block, self).__init__()
 
         squeeze_dim = in_channels * 4
@@ -35,20 +35,20 @@ class Block(nn.Module):
             x, curr_log_det = flow(x)
             log_det += curr_log_det
 
-        if self.split:
-            x, z_new = x.chunk(2, 1)
+        # if self.split:
+        #     x, z_new = x.chunk(2, 1)
 
         return x, log_det
 
     def reverse(self, x, eps: float = None, reconstruct: bool = False):
-        if self.split:
-            mean, log_sd = self.prior(x).chunk(2, 1)
-            z = gaussian_sample(eps, mean, log_sd)
-            x = torch.cat((x, z), 1)
-        else:
-            zero = torch.zeros_like(x)
-            mean, log_sd = self.prior(zero).chunk(2, 1)
-            x = gaussian_sample(eps, mean, log_sd)
+        # if self.split:
+        #     mean, log_sd = self.prior(x).chunk(2, 1)
+        #     z = gaussian_sample(eps, mean, log_sd)
+        #     x = torch.cat((x, z), 1)
+        # else:
+        #     zero = torch.zeros_like(x)
+        #     mean, log_sd = self.prior(zero).chunk(2, 1)
+        #     x = gaussian_sample(eps, mean, log_sd)
 
         for flow in self.flows[::-1]:
             x = flow.reverse(x)
