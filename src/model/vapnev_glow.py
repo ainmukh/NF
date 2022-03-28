@@ -80,9 +80,9 @@ class Decoder(nn.Module):
         return mean, log_sd
 
 
-class VAPNEV(nn.Module):
+class VAPNEV_GLOW(nn.Module):
     def __init__(self, config):
-        super(VAPNEV, self).__init__()
+        super(VAPNEV_GLOW, self).__init__()
         self.encoder = Encoder()
         self.decoder = Decoder()
         self.glow = Glow(config)
