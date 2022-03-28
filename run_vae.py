@@ -83,7 +83,7 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
                                            caption=f"sampled, step: {total_steps}")
                                for i in range(config.n_sample)]})
 
-        if step % (len(dataloader) // 2) == 0:
+        if (step + 1) % (len(dataloader) // 2) == 0:
             torch.save(model.state_dict(), path + f'vae2_{epoch}.pth')
         step += 1
 
