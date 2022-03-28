@@ -8,7 +8,7 @@ from src.train_vapnev import train
 from src.dataset import CelebaCustomDataset
 from torchvision import transforms
 import torch
-from src.model import VAPNEV_GLOW
+from src.model import VAPNEV
 from src.config import Config
 
 config = Config
@@ -32,7 +32,7 @@ dataloader = torch.utils.data.DataLoader(dataset, batch_size=8, drop_last=True)
 
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-model = VAPNEV_GLOW(config)
+model = VAPNEV(config)
 model.to(device)
 
 n_bins = 2.0 ** config.n_bits
