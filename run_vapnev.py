@@ -10,6 +10,8 @@ from torchvision import transforms
 import torch
 from src.model import VAPNEV
 from src.config import Config
+from .Task3 import Task3
+
 
 config = Config
 
@@ -32,7 +34,8 @@ dataloader = torch.utils.data.DataLoader(dataset, batch_size=8, drop_last=True)
 
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-model = VAPNEV()
+# model = VAPNEV()
+model = Task3(device)
 model.to(device)
 
 n_bins = 2.0 ** config.n_bits
