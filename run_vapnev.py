@@ -32,7 +32,7 @@ dataloader = torch.utils.data.DataLoader(dataset, batch_size=8, drop_last=True)
 
 
 device = 'cuda:0' if torch.cuda.is_available() else 'cpu'
-model = VAPNEV(config)
+model = VAPNEV()
 model.to(device)
 
 n_bins = 2.0 ** config.n_bits
