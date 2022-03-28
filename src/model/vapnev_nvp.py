@@ -5,6 +5,7 @@ from torch.distributions import MultivariateNormal
 from .utils import gaussian_log_p, gaussian_sample
 from .seminar_flows import ActNorm, AffineHalfFlow, NormalizingFlowModel
 from .vapnev_glow import Encoder, Decoder
+from .blocks import AffineCoupling
 
 
 class VAPNEV(nn.Module):
@@ -14,7 +15,8 @@ class VAPNEV(nn.Module):
         self.decoder = Decoder()
 
         prior = MultivariateNormal(torch.zeros(2), torch.eye(2))
-        flows = [AffineHalfFlow(dim=2, parity=i % 2) for i in range(9)]
+        # flows = [AffineHalfFlow(dim=2, parity=i % 2) for i in range(9)]
+        flows = [AffineCoupling(3) for i in range(9)]
         norms = [ActNorm(dim=2) for _ in flows]
         flows = list(itertools.chain(*zip(norms, flows)))
         self.nvp = NormalizingFlowModel(prior, flows)
