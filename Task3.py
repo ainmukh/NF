@@ -99,7 +99,7 @@ class Task3(nn.Module):
     def __init__(self, device, latent_size=256, lambda_kl=0.001):
         super(Task3, self).__init__()
 
-        pic_size = 64 * 64
+        pic_size = 3 * 64 * 64
         self.latent_size = latent_size
         self.encoder = Encoder()
         self.decoder = Decoder()
@@ -123,21 +123,30 @@ class Task3(nn.Module):
         return self.decoder(z)
 
     def forward(self, x):
+        bs, channels, _, _ = x.size()
         z, _, _ = self.encoder(x)
-        mean, log_sd = self.decoder(z)
-        y, log_det = self.nvp(x)
-        log_p = gaussian_log_p(y, mean, log_sd)
-        return y, log_p, log_det
+        rec, mean, log_sd = self.decoder(z)
+        y, log_det = self.prior(x.view(bs, -1))
+        log_p = gaussian_log_p(y[-1], mean, log_sd)
+        return rec, log_p, log_det
 
-    def sample_z(self, mean, log_std):
+    @torch.no_grad()
+    def sample(self, n):
+        z = torch.randn(n, 256).to(self.device) / 2
+        _, mean, log_std = self.decoder(z)
+        # bs = mean.size(0)
+        # mean = mean.view(bs, 3, 64, 64)
+        # log_std = log_std.view(bs, 3, 64, 64)
         return gaussian_sample(torch.randn_like(mean), mean, log_std)
         # return mean + torch.exp(log_std / 2) * eps  делит на 2 почему-то
 
+    @torch.no_grad()
     def reverse(self, x):
         z, _, _ = self.encoder(x)
-        mean, log_sd = self.decoder(z)
-        y = gaussian_sample(torch.randn_like(mean), mean, log_sd)
-        result = self.nvp.reverse(y)
+        _, mean, log_std = self.decoder(z)
+        y = gaussian_sample(torch.randn_like(mean), mean, log_std)
+        result = self.prior.reverse(y)
+        result = result[-1].view(z.size(0), 3, 64, 64)
         return result
 
     # def custom_loss(self, x, rec_x, z, mu, log_sigma):

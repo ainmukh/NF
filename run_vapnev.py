@@ -10,7 +10,7 @@ from torchvision import transforms
 import torch
 from src.model import VAPNEV
 from src.config import Config
-from .Task3 import Task3
+from Task3 import Task3
 
 
 config = Config
@@ -39,6 +39,11 @@ model = Task3(device)
 model.to(device)
 
 n_bins = 2.0 ** config.n_bits
+with torch.no_grad():
+    image = next(iter(dataloader))
+    # model.init_with_data(image)
+    image = image.to(device)
+    log_p, log_det, _ = model(image + torch.rand_like(image) / n_bins)
 
 optimizer = torch.optim.Adam(model.parameters(), lr=config.lr)
 

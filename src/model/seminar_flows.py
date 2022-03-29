@@ -172,31 +172,31 @@ class NormalizingFlow(nn.Module):
         return zs, log_det
 
     def reverse(self, z):
-        log_det = 0
+        # log_det = 0
         xs = [z]
         for flow in self.flows[::-1]:
-            z, ld = flow.reverse(z)
-            log_det += ld
+            z = flow.reverse(z)
+            # log_det += ld
             xs.append(z)
-        return xs, log_det
+        return xs  # , log_det
 
 
 class NormalizingFlowModel(nn.Module):
     """ A Normalizing Flow Model is a (prior, flow) pair """
-    
+
     def __init__(self, prior, flows):
         super().__init__()
         self.prior = prior
         self.flow = NormalizingFlow(flows)
-    
+
     def forward(self, x):
         zs, log_det = self.flow.forward(x)
-        prior_logprob = self.prior.log_prob(zs[-1]).view(x.size(0), -1).sum(1)
-        return zs, prior_logprob, log_det
+        # prior_logprob = self.prior.log_prob(zs[-1]).view(x.size(0), -1).sum(1)
+        return zs, log_det  # , prior_logprob,
 
     def reverse(self, z):
-        xs, log_det = self.flow.reverse(z)
-        return xs, log_det
+        xs = self.flow.reverse(z)
+        return xs  # , log_det
     
     def sample(self, num_samples):
         z = self.prior.sample((num_samples,))

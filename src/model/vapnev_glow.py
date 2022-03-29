@@ -79,6 +79,15 @@ class Decoder(nn.Module):
         log_sd = self.log_sd(x).view(bs, 3 * 4 ** 3, 64 // 2 ** 3, 64 // 2 ** 3)
         return mean, log_sd
 
+    # def forward(self, z):
+    #     bs = z.size(0)
+    #     latent = self.decoder_map(z).reshape(-1, 512, 4, 4)
+    #     x_ = self.decoder(latent)
+    #     x = x_.view(bs, -1)
+    #     mean = self.mean(x).view(bs, (3 * 4 ** 3) * (64 // 2 ** 3) * (64 // 2 ** 3))
+    #     log_sd = self.log_sd(x).view(bs, (3 * 4 ** 3) * (64 // 2 ** 3) * (64 // 2 ** 3))
+    #     return x_, mean, log_sd
+
 
 class VAPNEV_GLOW(nn.Module):
     def __init__(self, config):

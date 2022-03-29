@@ -25,16 +25,21 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
         y, log_p, log_det = model(image + torch.rand_like(image) / n_bins)
         log_det = log_det.mean()
         loss, log_p, log_det = calc_loss(log_p, log_det, config.img_size, n_bins)
+        rec_loss = torch.nn.MSELoss(reduction='sum')(image, y)
+        loss += rec_loss
         loss.backward()
         optimizer.step()
 
-        wandb.log({'loss': loss.item(), 'log_p': log_p.item(), 'log_det': log_det.item()})
+        wandb.log({
+            'loss': loss.item(), 'log_p': log_p.item(),
+            'log_det': log_det.item(), 'rec_loss': rec_loss.item()
+        })
 
         if step % 100 == 0:
             with torch.no_grad():
                 real_image = real_image.numpy()
                 fake_image = model.reverse(image).cpu().numpy()
-                sampled_image = model.sample(config.n_sample).cpu().numpy()
+                # sampled_image = model.sample(config.n_sample).cpu().numpy()
                 total_steps = step + epoch * len(dataloader)
                 wandb.log({'step': step,
                            'real images': [
@@ -45,10 +50,11 @@ def train_epoch(dataloader, config, model, optimizer, epoch, path):
                                wandb.Image(fake_image[i].transpose(1, 2, 0),
                                            caption=f"fake, step: {total_steps}")
                                for i in range(config.batch)],
-                           'sampled images': [
-                               wandb.Image(sampled_image[i].transpose(1, 2, 0),
-                                           caption=f"sampled, step: {total_steps}")
-                               for i in range(config.n_sample)]})
+                        #    'sampled images': [
+                        #        wandb.Image(sampled_image[i].view(3, 64, 64).transpose(1, 2, 0),
+                        #                    caption=f"sampled, step: {total_steps}")
+                        #        for i in range(config.n_sample)]
+                })
 
         if step % (len(dataloader) // 2) == 0:
             torch.save(model.state_dict(), path + f'vapnev{epoch}.pth')
